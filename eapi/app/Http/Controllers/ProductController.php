@@ -44,14 +44,10 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request, Product $product)
     {
-        // $product = new Product;
+        $request['details'] = $request->description;
+        unset($request['description']);
 
-        $product->name = $request->name;
-        $product->details = $request->description;
-        $product->stock = $request->stock;
-        $product->price = $request->price;
-        $product->discount = $request->discount;
-        $product->save();
+        $product = $product->create($request->all());
 
         return response([
             'data'=> new ProductResource($product)
@@ -87,9 +83,16 @@ class ProductController extends Controller
      * @param  \App\Model\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        //
+        $request['details'] = $request->description;
+        unset($request['description']);
+
+        $product->update($request->all());
+
+        return response([
+            'data'=> new ProductResource($product)
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -100,6 +103,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }
